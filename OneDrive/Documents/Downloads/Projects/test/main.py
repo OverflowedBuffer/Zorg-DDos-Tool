@@ -4,6 +4,7 @@ import requests
 import threading
 import pyfiglet
 import urllib3.connection
+import sys
 
 """
 
@@ -24,10 +25,23 @@ p_ = []
 ua = []
 count = 0
 
-proxy_file_loc = input("Enter the location of the proxy list: ")
-header_agent_file_loc = input("Enter the location of the user agent list: ")
-target_url = input("Enter the target url: ")
-threading_num = input("Enter the threading number: ")
+std_mode = False
+
+for arg in sys.argv:
+    if arg == "-d":
+        std_mode = True
+
+
+if not std_mode:
+    proxy_file_loc = input("Enter the location of the proxy list: ")
+    header_agent_file_loc = input("Enter the location of the user agent list: ")
+    target_url = input("Enter the target url: ")
+    threading_num = input("Enter the threading number: ")
+else:
+    proxy_file_loc = "http_proxies.txt"
+    header_agent_file_loc = "user_agents.txt"
+    target_url = input("Enter the target url: ")
+    threading_num = input("Enter the threading number: ")
 
 PROXIE_FILE_LOC = proxy_file_loc
 TARGET_URL = target_url
